@@ -18,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Kenepa\TranslationManager\TranslationManagerPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -41,6 +42,7 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -54,6 +56,21 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->plugin(TranslationManagerPlugin::make()
+                ->availableLocales([
+                    ['code' => 'en', 'name' => 'English', 'flag' => 'gb'],
+                    ['code' => 'fr', 'name' => 'Français', 'flag' => 'fr'],
+                    ['code' => 'ar', 'name' => 'العربية', 'flag' => 'eg'],
+                ])
+                ->languageSwitcher(true)
+                ->languageSwitcherRenderHook('panels::user-menu.before')
+                ->navigationGroup('Settings')
+                ->navigationIcon('heroicon-o-globe-alt')
+                ->showFlags(true)
+                ->disableKeyAndGroupEditing(false)
+                ->quickTranslateNavigationRegistration(true)
+                ->dontRegisterNavigationOnPanelIds(['guest'])
+                ->prependDirectoryPathToGroupName(false));
     }
 }
